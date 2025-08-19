@@ -2,59 +2,579 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>Counter Control</title>
+  <title>3-Point Shot Counter Control</title>
   <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
     body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+      color: #fff;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 30px;
+      padding: 20px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 20px;
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .header h1 {
+      font-size: 2.5em;
+      margin-bottom: 10px;
+      background: linear-gradient(45deg, #ffd700, #ffed4e);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .header p {
+      font-size: 1.2em;
+      opacity: 0.9;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+
+    .stat-card {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 15px;
+      padding: 25px;
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      text-align: center;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .stat-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    }
+
+    .stat-number {
+      font-size: 3em;
+      font-weight: bold;
+      margin-bottom: 10px;
+      background: linear-gradient(45deg, #00ff88, #00d4ff);
+      -webkit-background-clip: text;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .stat-label {
+      font-size: 1.1em;
+      opacity: 0.8;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .controls-section {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 20px;
+      padding: 30px;
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      margin-bottom: 20px;
+    }
+
+    .controls-section h2 {
+      text-align: center;
+      margin-bottom: 25px;
+      font-size: 1.8em;
+      color: #ffd700;
+    }
+
+    .quick-controls {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      gap: 15px;
+      margin-bottom: 30px;
+    }
+
+    .btn {
+      padding: 15px 25px;
+      border: none;
+      border-radius: 12px;
+      font-size: 1.1em;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .btn-primary {
+      background: linear-gradient(45deg, #00ff88, #00d4ff);
+      color: #1a1a1a;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(0, 255, 136, 0.4);
+    }
+
+    .btn-danger {
+      background: linear-gradient(45deg, #ff4757, #ff3742);
+      color: white;
+    }
+
+    .btn-danger:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(255, 71, 87, 0.4);
+    }
+
+    .btn-warning {
+      background: linear-gradient(45deg, #ffa502, #ff9500);
+      color: white;
+    }
+
+    .btn-warning:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(255, 165, 2, 0.4);
+    }
+
+    .custom-controls {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      margin-top: 20px;
+    }
+
+    .custom-row {
+      display: flex;
+      justify-content: center;
+    }
+
+    .custom-input-group {
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: center;
-      height: 100vh;
-      background: #111;
-      color: #fff;
-      font-family: Arial, sans-serif;
+      gap: 10px;
     }
-    button {
-      font-size: 2em;
-      margin: 20px;
-      padding: 20px 40px;
+
+    .custom-input-group label {
+      font-weight: 600;
+      color: #ffd700;
+      font-size: 1em;
+    }
+
+    .input-with-buttons {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .btn-small {
+      padding: 8px 12px;
+      font-size: 1em;
+      min-width: 40px;
+    }
+
+    .custom-input-group input {
+      padding: 10px 15px;
       border: none;
-      border-radius: 10px;
-      cursor: pointer;
-      background: #333;
-      color: #fff;
+      border-radius: 8px;
+      font-size: 1.1em;
+      background: rgba(255, 255, 255, 0.9);
+      color: #1a1a1a;
+      width: 80px;
+      text-align: center;
     }
-    button:hover { background: #555; }
+
+    .custom-input-group input:focus {
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.3);
+    }
+
+    .custom-input-group .btn {
+      padding: 10px 20px;
+      font-size: 1em;
+    }
+
+    .reset-section {
+      text-align: center;
+      margin-top: 30px;
+    }
+
+    .btn-reset {
+      background: linear-gradient(45deg, #6c5ce7, #a29bfe);
+      color: white;
+      padding: 15px 30px;
+      border: none;
+      border-radius: 12px;
+      font-size: 1.2em;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .btn-reset:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(108, 92, 231, 0.4);
+    }
+
+    .notification {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      padding: 15px 25px;
+      border-radius: 10px;
+      color: white;
+      font-weight: 600;
+      transform: translateX(400px);
+      transition: transform 0.3s ease;
+      z-index: 1000;
+    }
+
+    .notification.show {
+      transform: translateX(0);
+    }
+
+    .notification.success {
+      background: linear-gradient(45deg, #00b894, #00cec9);
+    }
+
+    .notification.error {
+      background: linear-gradient(45deg, #d63031, #e17055);
+    }
+
+    @media (max-width: 768px) {
+      .quick-controls {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      
+      .custom-controls {
+        gap: 15px;
+      }
+    }
   </style>
 </head>
 <body>
-  <h1>Counter Control</h1>
-  <button onclick="changeCount(1)">+1</button>
-  <button onclick="changeCount(-1)">-1</button>
+  <div class="container">
+    <div class="header">
+      <h1>🏀 3-Point Shot Counter</h1>
+      <p>Track your progress to 1000 three-pointers</p>
+    </div>
+
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-number" id="currentCount">0</div>
+        <div class="stat-label">Shots Made</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number" id="remainingCount">1000</div>
+        <div class="stat-label">Remaining</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number" id="percentage">0%</div>
+        <div class="stat-label">Progress</div>
+      </div>
+    </div>
+
+    <div class="controls-section">
+      <h2>Quick Controls</h2>
+      <div class="quick-controls">
+        <button class="btn btn-primary" onclick="changeCount(1)">+1 Shot</button>
+        <button class="btn btn-primary" onclick="changeCount(5)">+5 Shots</button>
+        <button class="btn btn-primary" onclick="changeCount(10)">+10 Shots</button>
+        <button class="btn btn-warning" onclick="changeCount(-1)">-1 Shot</button>
+        <button class="btn btn-warning" onclick="changeCount(-5)">-5 Shots</button>
+        <button class="btn btn-warning" onclick="changeCount(-10)">-10 Shots</button>
+      </div>
+
+      <div class="custom-controls">
+        <div class="custom-row">
+          <div class="custom-input-group">
+            <label>Add Shots:</label>
+            <div class="input-with-buttons">
+              <button class="btn btn-primary btn-small" onclick="decrementAdd()">-</button>
+              <input type="number" id="addAmount" placeholder="0" min="0" max="100">
+              <button class="btn btn-primary btn-small" onclick="incrementAdd()">+</button>
+            </div>
+            <button class="btn btn-primary" onclick="addCustomShots()">Add</button>
+          </div>
+        </div>
+        
+        <div class="custom-row">
+          <div class="custom-input-group">
+            <label>Remove Shots:</label>
+            <div class="input-with-buttons">
+              <button class="btn btn-warning btn-small" onclick="decrementRemove()">-</button>
+              <input type="number" id="removeAmount" placeholder="0" min="0" max="100">
+              <button class="btn btn-warning btn-small" onclick="incrementRemove()">+</button>
+            </div>
+            <button class="btn btn-warning" onclick="removeCustomShots()">Remove</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="reset-section">
+      <button class="btn-reset" onclick="resetCounter()">Reset Counter</button>
+      <button class="btn btn-warning" onclick="testConnection()" style="margin-left: 15px;">Test Connection</button>
+      <button class="btn btn-primary" onclick="createNewBin()" style="margin-left: 15px;">Create New Bin</button>
+    </div>
+  </div>
+
+  <div class="notification" id="notification"></div>
 
   <script>
-    const binId = "68a41277d0ea881f405d17e0";
+    const binId = "68a4134843b1c97be9223220";
     const masterKey = "$2a$10$g1pNflIpfpTZ7ogmdxBB4eF5SA719IlOPapRhxrhFTb0eJ9JZnd9K";
     const apiUrl = `https://api.jsonbin.io/v3/b/${binId}`;
+    const targetShots = 1000;
+
+    // Initialize the bin if it doesn't exist
+    async function initializeBin() {
+      try {
+        console.log("Testing connection to:", apiUrl);
+        console.log("Using master key:", masterKey.substring(0, 20) + "...");
+        
+        const response = await fetch(apiUrl + "/latest", {
+          headers: { "X-Master-Key": masterKey }
+        });
+        
+        console.log("Initial response status:", response.status);
+        
+        if (!response.ok) {
+          console.log("Response not OK, creating new bin...");
+          // Create new bin with initial data
+          const createResponse = await fetch(apiUrl, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "X-Master-Key": masterKey
+            },
+            body: JSON.stringify({ count: 0 })
+          });
+          
+          console.log("Create bin response status:", createResponse.status);
+          
+          if (createResponse.ok) {
+            console.log("Successfully created new bin");
+            showNotification("New bin created successfully!", 'success');
+          } else {
+            console.error("Failed to create bin:", createResponse.status);
+            showNotification("Failed to create new bin", 'error');
+          }
+        } else {
+          console.log("Bin exists and is accessible");
+        }
+      } catch (error) {
+        console.error("Error initializing bin:", error);
+        showNotification("Error initializing bin", 'error');
+      }
+    }
 
     async function changeCount(delta) {
-      // get current count
-      let r = await fetch(apiUrl + "/latest", {
-        headers: { "X-Master-Key": masterKey }
-      });
-      let data = await r.json();
-      let count = data.record.count + delta;
-
-      // update bin
-      await fetch(apiUrl, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          "X-Master-Key": masterKey
-        },
-        body: JSON.stringify({ count })
-      });
+      try {
+        // Get current count
+        let response = await fetch(apiUrl + "/latest", {
+          headers: { "X-Master-Key": masterKey }
+        });
+        
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+        
+        let data = await response.json();
+        let currentCount = data.record.count || 0;
+        
+        // Calculate new count
+        let newCount = Math.max(0, Math.min(targetShots, currentCount + delta));
+        
+        // Update bin
+        let updateResponse = await fetch(apiUrl, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            "X-Master-Key": masterKey
+          },
+          body: JSON.stringify({ count: newCount })
+        });
+        
+        if (!updateResponse.ok) {
+          throw new Error(`Update failed: HTTP ${updateResponse.status}`);
+        }
+        
+        // Update display
+        updateDisplay(newCount);
+        
+        // Show notification
+        const message = delta > 0 ? `Added ${delta} shot${delta !== 1 ? 's' : ''}!` : `Removed ${Math.abs(delta)} shot${Math.abs(delta) !== 1 ? 's' : ''}!`;
+        showNotification(message, 'success');
+        
+      } catch (error) {
+        console.error("Error updating count:", error);
+        let errorMessage = "Error updating count";
+        
+        if (error.message.includes("401")) {
+          errorMessage = "API key error - check your master key";
+        } else if (error.message.includes("404")) {
+          errorMessage = "Bin not found - check your bin ID";
+        } else if (error.message.includes("403")) {
+          errorMessage = "Access denied - check your API key";
+        } else if (error.message.includes("fetch")) {
+          errorMessage = "Network error - check your internet connection";
+        }
+        
+        showNotification(errorMessage, 'error');
+      }
     }
+
+    async function addCustomShots() {
+      const amount = parseInt(document.getElementById('addAmount').value);
+      if (isNaN(amount) || amount <= 0) {
+        showNotification("Please enter a valid number to add", 'error');
+        return;
+      }
+      
+      await changeCount(amount);
+      document.getElementById('addAmount').value = '';
+    }
+
+    async function removeCustomShots() {
+      const amount = parseInt(document.getElementById('removeAmount').value);
+      if (isNaN(amount) || amount <= 0) {
+        showNotification("Please enter a valid number to remove", 'error');
+        return;
+      }
+      
+      await changeCount(-amount);
+      document.getElementById('removeAmount').value = '';
+    }
+
+    function incrementAdd() {
+      const input = document.getElementById('addAmount');
+      const currentValue = parseInt(input.value) || 0;
+      input.value = Math.min(100, currentValue + 1);
+    }
+
+    function decrementAdd() {
+      const input = document.getElementById('addAmount');
+      const currentValue = parseInt(input.value) || 0;
+      input.value = Math.max(0, currentValue - 1);
+    }
+
+    function incrementRemove() {
+      const input = document.getElementById('removeAmount');
+      const currentValue = parseInt(input.value) || 0;
+      input.value = Math.min(100, currentValue + 1);
+    }
+
+    function decrementRemove() {
+      const input = document.getElementById('removeAmount');
+      const currentValue = parseInt(input.value) || 0;
+      input.value = Math.max(0, currentValue - 1);
+    }
+
+    async function resetCounter() {
+      if (confirm("Are you sure you want to reset the counter to 0?")) {
+        await changeCount(-999999); // This will set it to 0 due to Math.max(0, ...)
+        showNotification("Counter reset to 0", 'success');
+      }
+    }
+
+    function updateDisplay(count) {
+      document.getElementById('currentCount').textContent = count;
+      document.getElementById('remainingCount').textContent = Math.max(0, targetShots - count);
+      document.getElementById('percentage').textContent = Math.round((count / targetShots) * 100) + '%';
+    }
+
+    function showNotification(message, type) {
+      const notification = document.getElementById('notification');
+      notification.textContent = message;
+      notification.className = `notification ${type}`;
+      notification.classList.add('show');
+      
+      setTimeout(() => {
+        notification.classList.remove('show');
+      }, 3000);
+    }
+
+    async function refreshDisplay() {
+      try {
+        let response = await fetch(apiUrl + "/latest", {
+          headers: { "X-Master-Key": masterKey }
+        });
+        let data = await response.json();
+        let count = data.record.count || 0;
+        updateDisplay(count);
+      } catch (error) {
+        console.error("Error refreshing display:", error);
+      }
+    }
+
+    async function testConnection() {
+      try {
+        const response = await fetch(apiUrl + "/latest", {
+          headers: { "X-Master-Key": masterKey }
+        });
+        
+        if (response.ok) {
+          showNotification("Connection successful! Bin exists and is accessible.", 'success');
+        } else if (response.status === 404) {
+          // Bin doesn't exist, try to create it
+          showNotification("Bin not found. Creating new bin...", 'error');
+          await initializeBin();
+        } else {
+          showNotification(`Connection failed with status: ${response.status}`, 'error');
+        }
+      } catch (error) {
+        showNotification("Network error or API key issue. Cannot connect to JSONBin.io.", 'error');
+        console.error("Test connection error:", error);
+      }
+    }
+
+    async function createNewBin() {
+      try {
+        const response = await fetch(apiUrl, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "X-Master-Key": masterKey
+          },
+          body: JSON.stringify({ count: 0 })
+        });
+
+        if (response.ok) {
+          showNotification("New bin created successfully!", 'success');
+          await refreshDisplay(); // Refresh display to show new count
+        } else {
+          showNotification(`Failed to create new bin: HTTP ${response.status}`, 'error');
+          console.error("Failed to create new bin:", response.status);
+        }
+      } catch (error) {
+        showNotification("Network error or API key issue. Cannot create new bin.", 'error');
+        console.error("Create new bin error:", error);
+      }
+    }
+
+    // Initialize and refresh
+    initializeBin();
+    refreshDisplay();
+    
+    // Refresh every 5 seconds to stay in sync
+    setInterval(refreshDisplay, 5000);
   </script>
 </body>
 </html>
