@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>3-Point Shot Counter Overlay</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: transparent;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      font-family: 'Arial', 'Helvetica', sans-serif;
+      overflow: hidden;
+    }
+
+    .overlay-container {
+      background: rgba(10, 10, 20, 0.9);
+      border-radius: 15px;
+      padding: 25px 30px;
+      border: 2px solid #00ff88;
+      text-align: center;
+      box-shadow: 0 0 25px rgba(0, 255, 136, 0.4);
+      min-width: 320px;
+      width: fit-content;
+      height: auto;
+    }
+
+    .title {
+      color: #00ff88;
+      font-size: 1.6em;
+      font-weight: 900;
+      margin-bottom: 18px;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.8);
+      font-family: 'Arial Black', 'Impact', sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .count-display {
+      color: #ffffff;
+      font-size: 5em;
+      font-weight: 900;
+      margin-bottom: 18px;
+      text-shadow: 0 0 20px #00ff88, 0 0 35px #00d4ff;
+      font-family: 'Arial Black', 'Impact', sans-serif;
+      line-height: 1;
+    }
+
+    .progress-container {
+      width: 100%;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
+      height: 20px;
+      margin-bottom: 10px;
+      overflow: hidden;
+      border: 1px solid rgba(0, 255, 136, 0.3);
+    }
+
+    .progress-bar {
+      height: 100%;
+      background: linear-gradient(90deg, #00ff88, #00d4ff);
+      border-radius: 10px;
+      transition: width 0.6s ease;
+      box-shadow: 0 0 12px rgba(0, 255, 136, 0.6);
+    }
+
+    .progress-text {
+      color: #00ff88;
+      font-size: 1.2em;
+      font-weight: 800;
+      text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.7);
+      font-family: 'Arial Black', 'Impact', sans-serif;
+    }
+  </style>
+</head>
+<body>
+  <div class="overlay-container">
+    <div class="title">3-Point Shots 🏀</div>
+    <div class="count-display" id="count">0</div>
+    <div class="progress-container">
+      <div class="progress-bar" id="progressBar"></div>
+    </div>
+    <div class="progress-text" id="progressText">0 / 1000</div>
+  </div>
+
+  <script>
+    const binId = "68a4134843b1c97be9223220";
+    const apiUrl = `https://api.jsonbin.io/v3/b/${binId}/latest`;
+    const targetShots = 1000;
+
+    let lastCount = 0;
+
+    async function refresh() {
+      try {
+        let response = await fetch(apiUrl);
+        let data = await response.json();
+        let currentCount = data.record.count || 0;
+        updateDisplay(currentCount);
+        lastCount = currentCount;
+      } catch (error) {
+        console.error("Error refreshing:", error);
+      }
+    }
+
+    function updateDisplay(count) {
+      const countElement = document.getElementById('count');
+      const progressBar = document.getElementById('progressBar');
+      const progressText = document.getElementById('progressText');
+
+      countElement.textContent = count;
+      const percentage = Math.min(100, (count / targetShots) * 100);
+      progressBar.style.width = percentage + '%';
+      progressText.textContent = `${count} / ${targetShots}`;
+    }
+
+    refresh();
+    setInterval(refresh, 1000);
+  </script>
+</body>
+</html>
